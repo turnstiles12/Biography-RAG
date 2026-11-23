@@ -1,0 +1,39 @@
+{
+  "name": "biography-rag",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Grounded biography generator: upload pages about one person, retrieve, and weave a fully cited story.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "migrate": "tsx scripts/migrate.ts",
+    "seed": "tsx scripts/fetch_and_seed_franklin.ts",
+    "seed:skip-run": "tsx scripts/fetch_and_seed_franklin.ts --skip-run",
+    "canary": "tsx scripts/canary.ts",
+    "audit-log": "tsx scripts/review_log.ts",
+    "prefetch-model": "tsx scripts/prefetch_model.ts"
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.11.0",
+    "@huggingface/transformers": "3.8.1",
+    "next": "15.5.29",
+    "node-html-parser": "9.0.7",
+    "pg": "8.23.1",
+    "react": "19.1.10",
+    "react-dom": "19.1.10",
+    "unpdf": "2.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

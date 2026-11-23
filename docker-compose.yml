@@ -1,0 +1,56 @@
+# Local development / single-host deployment: Next.js app + Postgres with pgvector.
+#   cp .env.example .env      # add ANTHROPIC_API_KEY
+#   docker compose up -d --build
+#   docker compose run --rm seed            # one-time: download + index the Franklin demo
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://rag:rag@db:5432/rag
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  seed:
+    build:
+      context: .
+      target: tools
+    profiles: ["seed"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://rag:rag@db:5432/rag
+    volumes:
+      - ./.corpus:/app/.corpus
+      - ./logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
